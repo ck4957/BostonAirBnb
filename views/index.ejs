@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html ng-app="BostonAirbnbApp">
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- w3 CSS -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header clearfix">
+        <!--  Nav Bar -->
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation"><a href="#">Home</a></li>
+            <li role="presentation"><a href="#/about">About</a></li>
+            <li role="presentation"><a href="#/contact">Contact</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">KRT Project</h3>
+      </div>
+      <div class="jumbotron text-center bg-default">
+        <h1 style="font-weight:700 !important; color:#FF5A5F !important">Airbnb</h1>
+        <p>Find Unique homes in Boston</p>
+    </div>
+
+    <!-- Dynamic Content based on Routing -->
+    <ng-view ></ng-view>
+
+    <!-- Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.min.js"></script>
+    <!--  Angular UI - BootStrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Google Maps API -->
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyBdpH5iE1V_i1Dg0vjo7kH129nwIH-46Rk"></script>
+    <!-- AngularJS library for Google Map -->
+    <script src="/ngmap/build/scripts/ng-map.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Template for Result List on search-->
+    <script type="text/ng-template" id="/airbnbHomesResultList.html">
+      <div class="row" style="height:50px">
+        <div class="col-lg-3 center-block"></div>
+        <div class="col-lg-6 center-block">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <i class="fa fa-search"></i>
+            </span>
+             <input type="text" ng-model="query" class="form-control">
+             <span class="input-group-btn">
+               <button class="btn btn-danger" ng-click="filterResults=query;hideResults=true" type="button">  Search  </button>
+             </span>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="row" ng-show="hideResults">
+        <table class="table table-hover table-striped">
+          <thead class="thead-inverse">
+            <tr>
+              <th>Name</th>
+              <th>Property Type</th>
+              <th>Price</th>
+              <th>Host Name</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="x in filteredData = ( airbnbhomes | smart: filterResults) | limitTo: numPerPage: maxSize*(currentPage-1)">
+              <td><a href="#/{{x._id}}">{{x.name}}</a></td>
+              <td>{{x.property_type}}</td>
+              <td>{{x.price}}</td>
+              <td>{{x.host_name}}</td>
+              <td>{{x.smart_location}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul uib-pagination class="pagination-sm pagination" boundary-links="true" rotate="true"
+                        max-size="maxSize"
+                        total-items="filteredData.length" ng-model="currentPage" ng-change="pageChanged()"></ul>
+      </div>
+    </script>
+    <!-- Template for Home Details page -->
+    <script type="text/ng-template" id="/airbnbHomesDetails.html">
+      <!-- Sidebar/menu -->
+      <div class="w3-row">
+        <!-- Left Column -->
+        <div class="w3-col m2">
+          <!-- Host Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container">
+             <h4 class="w3-center">Host Profile</h4>
+             <p class="w3-center"><img src="{{airbnbhome.host_picture_url}}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> {{airbnbhome.host_name}}</p>
+             <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>{{airbnbhome.smart_location}}</p>
+             <!-- <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> April 1, 1988</p> -->
+            </div>
+          </div>
+          <br>
+          <!-- Rent Info -->
+          <div class="w3-card w3-round w3-white w3-center">
+            <div class="w3-container">
+              <h3>Rental</h3>
+              <h3>from {{airbnbhome.price}}</h3>
+              <h6>per night</h6>
+            </div>
+          </div>
+          <br>
+        <!-- End Left Column -->
+        </div>
+
+        <!-- Middle Column -->
+        <div class="w3-col m7">
+          <div class="w3-row-padding">
+            <div class="w3-col m12">
+              <div class="w3-card w3-round w3-white">
+                <div class="w3-container w3-padding">
+                  <h5 class="w3-opacity text-center">{{airbnbhome.name}}</h5>
+                  <hr class="w3-clear">
+                  <h6 class="w3-opacity">Add your review</h6>
+                  <input class="w3-border w3-padding form-control" type="text" ng-model="newReviewerName" placeholder="Name">
+                  <br />
+                  <input class="w3-border w3-padding form-control" type="text" ng-model="newReviewerComment" placeholder="Comment">
+                  <br />
+                  <button type="button" class="w3-button w3-theme" ng-click="save()"><i class="fa fa-pencil"></i> Submit</button>
+                  <hr class="w3-clear">
+                  <h6 class="w3-opacity">The {{airbnbhome.property_type}}</h6>
+                  <img src="{{airbnbhome.picture_url}}" style="width:100%" class="w3-margin-bottom">
+                  <p>{{airbnbhome.summary}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div ng-repeat="review in airbnbhome.reviews" class="w3-container w3-card w3-white w3-round w3-margin"><br>
+            <img src="/images/avatar_neutrl.webp" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+            <h4>{{review.reviewer_name}}</h4><br>
+            <p>{{review.comments}}</p>
+          </div>
+        <!-- End Middle Column -->
+        </div>
+
+        <!-- Right Column -->
+        <div class="w3-col m3">
+          <div class="w3-card w3-round w3-white w3-hide-small">
+            <div class="w3-container">
+              <p>Amenities</p>
+              <p>
+                <span ng-repeat="amenity in airbnbhome.amenities" class="w3-tag w3-small w3-theme">{{amenity}}</span>
+              </p>
+            </div>
+          </div>
+          <br>
+          <div class="w3-card w3-round w3-white w3-center">
+            <div class="w3-container">
+              <p>Google Maps</p>
+              <div>
+                <!-- Google Map using ngMap -->
+                <ng-map zoom="11" center="[{{airbnbhome.latitude}},{{airbnbhome.longitude}}]">
+                  <marker position="[{{airbnbhome.latitude}},{{airbnbhome.longitude}}]" />
+                  <shape name="circle" radius="400" center="[{{airbnbhome.latitude}},{{airbnbhome.longitude}}]" radius="4000" />
+                  <control name="overviewMap" opened="true" />
+                </ng-map>
+              </div>
+            </div>
+          </div>
+          <br>
+        <!-- End Right Column -->
+        </div>
+      <!-- End Grid -->
+      </div>
+      <a href="/">Back</a>
+    </script>
+    <!--  Template for About us page-->
+    <script type="text/ng-template" id="about.html">
+      <h4 class="w3-center">As part of the Airbnb Inside initiative, this dataset describes the listing activity of homestays in Boston, MA.</h4>
+    </script>
+
+    <script type="text/ng-template" id="contact.html">
+      <div class="w3-row">
+        <h2 class="w3-center">
+          Team Members
+        </h2>
+      </div>
+      <div class="w3-row">
+        <!-- Left Column -->
+        <div class="w3-col m3 w3-center">
+          <!-- Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container">
+             <h4 class="w3-center">Mayuresh Naik</h4>
+             <p class="w3-center"><img src="/images/avatar_neutrl.webp" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i>IST</p>
+             <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> Rochester, NY</p>
+             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-text-theme"></i>mpn3885@rit.edu</p>
+            </div>
+          </div>
+          <br>
+        </div>
+        <div class="w3-col m3 w3-center">
+          <!-- Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container">
+             <h4 class="w3-center">Haya Alhussin</h4>
+             <p class="w3-center"><img src="/images/avatar_neutrl.webp" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i>IST</p>
+             <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> Rochester, NY</p>
+             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-text-theme"></i>hxa0000@rit.edu</p>
+            </div>
+          </div>
+          <br>
+        </div>
+
+        <div class="w3-col m3 w3-center">
+          <!-- Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container">
+             <h4 class="w3-center">Shashank Reddy</h4>
+             <p class="w3-center"><img src="/images/avatar_neutrl.webp" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> IST</p>
+             <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> Rochester, NY</p>
+             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-text-theme"></i>sxr3463@rit.edu</p>
+            </div>
+          </div>
+          <br>
+        </div>
+
+        <div class="w3-col m3 w3-center">
+          <!-- Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container">
+             <h4 class="w3-center">Chirag Kular</h4>
+             <p class="w3-center"><img src="/images/avatar_neutrl.webp" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> CS</p>
+             <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> Rochester, NY</p>
+             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-text-theme"></i>ck4957@rit.edu</p>
+            </div>
+          </div>
+          <br>
+        </div>
+
+
+      </div>
+    </script>
+
+    <script>
+      angular.module('BostonAirbnbApp', ['ui.bootstrap','ngRoute', 'ngResource','ngMap'])
+        //---------------
+        // Services
+        //---------------
+        .factory('AirbnbHomes', ['$resource','$http', function($resource,$http){
+          //return $http.get('/airbnbhomes');
+          return $resource('/airbnbhomes/:id', null, {
+            'update': { method:'PUT' }
+          });
+        }])
+        //---------------
+        // Controllers
+        //---------------
+        // Home Result list page Controller
+        .controller('AirbnbHomeResultController', ['$scope','$location', 'AirbnbHomes', function ($scope,$location, AirbnbHomes) {
+          // Initially hide the result table
+          $scope.hideResults = false;
+
+          //Variables and function for Pagination
+          $scope.currentPage = 1
+          $scope.numPerPage = 10
+          $scope.maxSize = 5
+          $scope.pageChanged = function() {
+            var begin = (($scope.currentPage - 1) * $scope.numPerPage);
+          };
+
+          // Get all the results from MongoDB
+          $scope.airbnbhomes = AirbnbHomes.query();
+          $scope.filteredData = []
+        }])
+        .filter('smart', function() {
+            return function(input, filterString) {
+              if (!filterString) {
+                return input;
+              }
+              filterString = '.*' + filterString.toLowerCase().split(' ').join('.*');
+              var regex = new RegExp(filterString, 'i'), output = [];
+              angular.forEach(input, function(item) {
+                if (regex.test(item.name)) {
+                  output.push(item);
+                }
+              });
+              return output;
+            };
+          })
+
+        // Home Details page controller
+        .controller('HomeDetailCtrl', ['$scope', '$routeParams', 'AirbnbHomes', '$location', function ($scope, $routeParams, AirbnbHomes, $location) {
+          $scope.googleMapsUrl="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdpH5iE1V_i1Dg0vjo7kH129nwIH-46Rk"
+          $scope.airbnbhome = AirbnbHomes.get({id: $routeParams.id });
+
+          // Function to save the reviews in mongo DB
+          $scope.save = function(){
+            // Check for Empty values
+            if(!$scope.newReviewerName || !$scope.newReviewerComment || $scope.newReviewerName.length < 1 || $scope.newReviewerComment.length < 1 ) return;
+            // Create Review Object
+            var newReview = { "reviewer_id":Math.random().toString(),"reviewer_name": $scope.newReviewerName, "comments": $scope.newReviewerComment };
+            $scope.airbnbhome.reviews.push(newReview);
+            AirbnbHomes.update({id: $scope.airbnbhome._id}, $scope.airbnbhome)
+            $scope.newReviewerComment = ''; // clear textbox
+            $scope.newReviewerName = ''; // clear textbox
+          }
+        }])
+        .controller('ContactController',['$scope','$http',function($scope,$http){
+          $http.get('/contact').then(function(response){
+              // $http.get('/details').then(function(response){
+              // })
+                console.log(response)
+          })
+        }])
+        //---------------
+        // Routes
+        //---------------
+        .config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
+          $locationProvider.hashPrefix('');
+          $routeProvider
+            .when('/', {
+              templateUrl: '/airbnbHomesResultList.html',
+              controller: 'AirbnbHomeResultController'
+            })
+            .when('/about', {
+              templateUrl: 'about.html'
+            })
+            .when('/contact', {
+              templateUrl: 'contact.html',
+              controller:'ContactController'
+            })
+            .when('/:id', {
+              templateUrl: '/airbnbHomesDetails.html',
+              controller: 'HomeDetailCtrl'
+           });
+        }]);
+    </script>
+    <footer class="footer text-center">
+      <p>&copy; Group 4 2017</p>
+    </footer>
+  </body>
+</html>
