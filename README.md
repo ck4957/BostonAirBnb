@@ -14,7 +14,7 @@ There are not many prerequisites required to build and run this project, but you
   ```bash
   $ git clone https://github.com/ck4957/BostonAirBnb
   ```
-  Open the Command Prompt and move to the directory of project folder "BostonAirbnb" in our case. 
+  Open the Command Prompt and move to that directory of project
 
 ### Run the server process using following command :  
   ```
@@ -31,3 +31,13 @@ There are not many prerequisites required to build and run this project, but you
   On apartment details page, user can add comments. 
 
   Navigate to "About" and "Contact" Page for more details.
+
+## Resources
+
+[MEAN Stack Tutorial](https://adrianmejia.com/blog/2014/09/28/angularjs-tutorial-for-beginners-with-nodejs-expressjs-and-mongodb/)
+
+ExpressJS - [http://www.expressjs.com](http://www.expressjs.com)
+
+AngularJS - [http://www.angularjs.org](http://www.angularjs.org)
+
+Node.js - [http://www.nodejs.org](http://www.nodejs.org)
