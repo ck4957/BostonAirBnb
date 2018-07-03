@@ -15,6 +15,9 @@ There are not many prerequisites required to build and run this project, but you
   $ git clone https://github.com/ck4957/BostonAirBnb
   ```
   Navigate into it using your Terminal (Mac & Linux) or Command Prompt (Windows)
+  ```
+  $ cd BostonAirBnb
+  ```
 
 ### Run the server process using following command :  
   ```
