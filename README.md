@@ -12,7 +12,7 @@ There are not many prerequisites required to build and run this project, but you
 
 ### Cloning The GitHub Repository
   ```bash
-  $ git clone ub.com/ck4957/BostonAirBnb
+  $ git clone https://github.com/ck4957/BostonAirBnb
   ```
   Open the Command Prompt and move to the directory of project folder "BostonAirbnb" in our case. 
 
