@@ -19,8 +19,8 @@ var Grid = require('gridfs-stream')
 // Use native Node promises
 mongoose.Promise = global.Promise;
 // connect to MongoDB
-mongoose.connect('mongodb://group5:group5@ds257485.mlab.com:57485/boston')
-//mongoose.connect('mongodb://localhost:27017/Boston')
+// mongoose.connect('mongodb://group5:group5@ds257485.mlab.com:57485/boston')
+mongoose.connect('mongodb://localhost:27017/Boston')
   .then(() =>  {
     console.log('connection succesful')
     //GridFS = Grid(mongoose.connection.db,mongoose.mongo)
